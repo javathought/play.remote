@@ -1,0 +1,27 @@
+h1. A module to call a JSON API via a model definition
+
+p. The goal of this module is to handle a remote JSON API as a model in the MVC application model.
+
+h2. Enable the module for the application
+
+bc.. 
+
+h2. Defining your model
+
+bc.. @RemoteEntity
+public class Car extends RemoteModel {
+
+	public String name;
+	public String colour;
+	public int topSpeed;
+	
+}
+
+p. If collections
+
+h2. Configuring your model
+
+p.
+
+h2. Using your models 
+
