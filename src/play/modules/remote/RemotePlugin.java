@@ -10,14 +10,12 @@ public class RemotePlugin extends PlayPlugin {
 	
 	@Override
 	   public void onApplicationStart() {
-		      Logger.info("*********************** Yeeha, firstmodule started");
+		      Logger.info("Remote module started");
 		      RemoteRouter.load();
 		   }
 
 	@Override
 	public void enhance(ApplicationClass applicationClass) throws Exception {
-
-		Logger.trace("*********************** Plugin2 : applicationClass = %s [%s]", applicationClass, applicationClass.toString());
 		enhancer.enhanceThisClass(applicationClass);
 	}
 	
