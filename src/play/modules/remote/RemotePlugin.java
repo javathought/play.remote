@@ -3,6 +3,7 @@ package play.modules.remote;
 import play.Logger;
 import play.PlayPlugin;
 import play.classloading.ApplicationClasses.ApplicationClass;
+import play.modules.remote.RemoteEnhancer;
 
 public class RemotePlugin extends PlayPlugin {
 	

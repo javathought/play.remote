@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-
-
 import jregex.Matcher;
 import jregex.Pattern;
 import jregex.REFlags;
@@ -25,7 +23,8 @@ import play.vfs.VirtualFile;
 
 public class RemoteRouter {
 	
-	static Pattern routePattern = new Pattern("^({method}GET|POST|PUT|DELETE|OPTIONS|HEAD|WS|\\*)[(]?({headers}[^)]*)(\\))?\\s+({path}.*/[^\\s]*)\\s+({action}[^\\s(]+)({params}.+)?(\\s*)$");
+//	static Pattern routePattern = new Pattern("^({method}GET|POST|PUT|DELETE|OPTIONS|HEAD|WS|\\*)[(]?({headers}[^)]*)(\\))?\\s+({path}.*/[^\\s]*)\\s+({action}[^\\s(]+)({params}.+)?(\\s*)$");
+	static Pattern routePattern = new Pattern("^({method}GET|POST|PUT|DELETE|OPTIONS|HEAD|WS|\\*)\\s+({path}.*/[^\\s]*)\\s+({action}[^\\s(]+)({params}.+)?(\\s*)$");
     /**
      * Pattern used to locate a method override instruction in request.querystring
      */
@@ -64,14 +63,12 @@ public class RemoteRouter {
      */
     public static void load() {
 //        routes.clear();
-        // Remote route file
-//        routesConf = Play.appRoot.child("conf/remote.conf");
-	      Logger.info("*********************** Remote : loading routes");
 
+    	// Remote route file
+    	//        routesConf = Play.appRoot.child("conf/remote.conf");
         routesConf = VirtualFile.fromRelativePath("/conf/remote.conf");
         parse(routesConf, null);
         lastLoading = System.currentTimeMillis();
-	      Logger.info("*********************** Remote : routes loaded");
         // Plugins
 //        Play.pluginCollection.onRoutesLoaded();
     }
@@ -91,6 +88,9 @@ public class RemoteRouter {
     public static Route getRoute(String method, String path, String action, String params, String headers, String sourceFile, int line) {
         Route route = new Route();
         route.method = method;
+        if (Logger.isTraceEnabled()) {
+            Logger.trace("path = [" + path + "]");
+        }
         route.path = path.replace("//", "/");
         route.action = action;
         route.routesFile = sourceFile;
@@ -120,6 +120,9 @@ public class RemoteRouter {
         if (content.indexOf("${") > -1 || content.indexOf("#{") > -1 || content.indexOf("%{") > -1) {
             // Mutable map needs to be passed in.
             content = TemplateLoader.load(routeFile).render(new HashMap<String, Object>(16));
+        }
+        if (Logger.isTraceEnabled()) {
+        	Logger.trace("Content of route = [%s]", content);
         }
         parse(content, prefix, fileAbsolutePath);
     }
@@ -155,7 +158,8 @@ public class RemoteRouter {
                     String method = matcher.group("method");
                     String path = prefix + matcher.group("path");
                     String params = matcher.group("params");
-                    String headers = matcher.group("headers");
+//                    String headers = matcher.group("headers");
+                    String headers = null;
                     appendRoute(method, path, action, params, headers, fileAbsolutePath, lineNumber);
                 }
             } else {

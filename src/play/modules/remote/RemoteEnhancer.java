@@ -69,6 +69,11 @@ public class RemoteEnhancer extends Enhancer {
         CtMethod find = CtMethod.make("public static java.util.List find(String query, Object[] params) { return rm().find(" + entityName + ".class, query, params); }", ctClass);
         ctClass.addMethod(find);
 		
+		// delete			
+		CtMethod delete = CtMethod.make("public static play.libs.WS.HttpResponse delete(Object id) { " +
+	    	"return rm().delete(" + entityName + ".class, id); } ", ctClass);
+		ctClass.addMethod(delete);
+
 		// Done.
 		applicationClass.enhancedByteCode = ctClass.toBytecode();
 		ctClass.detach();

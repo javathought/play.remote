@@ -67,5 +67,13 @@ public class RemoteModel {
     public static <T extends RemoteModel> List<T> find(String query, Object... params) {
         throw new UnsupportedOperationException("Please annotate your Remote model with @play.modules.remote.RemoteEntity annotation.");
     }
-	  
+
+    /**
+     * Delete the entities of this type
+     * @return 0/1
+     */
+    public static HttpResponse delete(Object id) {
+        throw new UnsupportedOperationException("Please annotate your Remote model with @play.modules.remote.RemoteEntity annotation.");
+    }
+  
 }

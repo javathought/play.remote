@@ -1,5 +1,6 @@
 package play.modules.remote;
 
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,13 +13,26 @@ import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 
 import play.Logger;
+import play.Play;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
 import play.modules.remote.RemoteRouter.Route;
+import play.mvc.Controller;
+import play.mvc.Http.Header;
+import play.mvc.results.NotFound;
 
 public class RemoteManager {
 	protected static Gson gson = new Gson();
 	public static HashMap<String, Type>listMap = new HashMap<String, Type>(); 
+	private String host;
+	private String port;	
+	private String urlBase;
+	
+	public RemoteManager() {
+		host = Play.configuration.getProperty("remote.host");
+		port = Play.configuration.getProperty("remote.port","9000");
+		urlBase = "http://" + host + ":" + port;
+	}
 
 
 	/**
@@ -31,7 +45,8 @@ public class RemoteManager {
 	public RemoteModel find(Class clazz, Object id) {
 		Route route = getIdUrl(clazz);
 		Object[] params = new Object[1]; params[0] = id;
-		String url = "http:/" + bindParameters(route.path, params);
+		String url = urlBase + bindParameters(route.path, params);
+//		String url = bindParameters(route.path, params);
 
 		if (route.method.equals("GET")) {
 	    	HttpResponse response = WS.url(url).get();			
@@ -44,7 +59,11 @@ public class RemoteManager {
 	@SuppressWarnings("unchecked")
 	public <T extends RemoteModel>List<T> findAll(Class clazz) {
 		Route route = getAllUrl(clazz);
-		String url = String.format("http:/" + route.path);
+		String url = String.format(urlBase + route.path);
+//        if (Logger.isTraceEnabled()) {
+//        	Logger.trace("path = [%s]", route.path);
+//        }
+//		String url = String.format(route.path);
 
 		if (route.method.equals("GET")) {
 			return get(clazz, url);
@@ -56,12 +75,34 @@ public class RemoteManager {
 
 	public <T extends RemoteModel>List<T> find(Class clazz, String query, Object[] params) {
 		Route route = getUrl(clazz, query);
-		String url = "http:/" + bindParameters(route.path, params);
+		String url = urlBase + bindParameters(route.path, params);
 
 		if (route.method.equals("GET")) {
 			return get(clazz, url);
 		}
-		return null;
+		return null;		
+	}
+
+
+	public HttpResponse delete(Class clazz, Object id) {
+		Route route = RemoteRouter.route(clazz.getSimpleName()+".delete");
+		Object[] params = new Object[1]; params[0] = id;
+		String url = urlBase + bindParameters(route.path, params);
+//		String url = bindParameters(route.path, params);
+
+		if (Logger.isTraceEnabled()) {
+			Logger.trace("%s path = [%s]", route.method, route.path);
+		}
+		
+		if (route.method.equals("DELETE")) {
+	    	HttpResponse response = WS.url(url).delete();
+	    	
+//	    	if (response.success()) {
+	    		return response;
+//	    	}
+		}
+//		return 0;
+		throw new NotFound(route.path);
 		
 	}
 

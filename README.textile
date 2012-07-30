@@ -6,22 +6,81 @@ h2. Enable the module for the application
 
 bc.. 
 
+h2. Configuring the remote server
+
+p. Configuring access to the remote server is really easy. Just add the host and port of the service in `application.conf` 
+
+bc.. # Remote server API
+remote.host=localhost
+remote.port=9011
+
+h2. Configuring routes to remote services
+
+p. The configuration of the services on the remote server is done in the same way your configure routes in Play!. Create a `conf/remote.conf` file and add the routes as a standard Play! route. 
+
+bc.. 
+DELETE /api/accounts/{id}		Account.delete
+GET /api/accounts/{id}		Account.findById
+GET /api/accounts			Account.findAll
+GET /api/accounts/{id}/transactions	Transaction.findByAccount
+
+p. The difference with a standard route file is the the pseudo method are not methods but "called" query to the service assocaited with a stub model. The path to interpret the route file is reversed compared to a standard route file : the call to a pseudo method defined in the route file will call the service on the associated path with the http method of the route.
+
+p. To see the use of the route file, see "Using your models".
+
 h2. Defining your model
 
-bc.. @RemoteEntity
-public class Car extends RemoteModel {
+Defining a (stub) model to a remote service is made by inheriting the RemoteModel and adding the RemoteEntity annotation :
 
-	public String name;
-	public String colour;
-	public int topSpeed;
-	
+bc.. @RemoteEntity
+public class Account extends RemoteModel{
+
+	 public Long id;
+ 	 public Client owner;
+    public String number;
+    public Double balance;
+    public String label;
+    
 }
 
-p. If collections
-
-h2. Configuring your model
-
-p.
-
 h2. Using your models 
+
+p. Using the model is made by passing the names of the pseudo methods to methods defined by the plugin. 
+
+h3. Getting a collection of instances of the model
+
+bc.. List<Transaction> operations= Transaction.find("findByAccount", id) ;    	
+
+h3. Getting an instance of the model
+
+
+h3. Special methods 
+
+p. There's special pseudo methods that can be directly defined in the route file : findById, findAll, delete. The named queries are directly matched to method implemented by the plugin. 
+
+p. To get an instance of an object by id, use the default method findById :
+
+bc..    	Account account = (Account) Account.findById(id);
+
+p. To get a collection of the instances of the model rendered by a service with no parameter, call the method findAll.  
+
+bc..    	List<Account> accounts =  Account.findAll();
+        	render("@Application.index", accounts);
+
+p. To delete 
+
+bc..    	HttpResponse response = Account.delete(id);
+    	if (response.success()) {
+        	render("@Application.index", accounts);    		
+    	} else {    	
+    		if (response.getStatus().equals(StatusCode.NOT_FOUND)) {
+        		String error = 
+        				response.getStatusText();
+        		render("@Application.index", accounts, error);
+    			
+    		} else {
+    			renderHtml(response.getString());
+    		}
+    	}
+
 
