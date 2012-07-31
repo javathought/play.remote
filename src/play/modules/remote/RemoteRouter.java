@@ -23,8 +23,7 @@ import play.vfs.VirtualFile;
 
 public class RemoteRouter {
 	
-//	static Pattern routePattern = new Pattern("^({method}GET|POST|PUT|DELETE|OPTIONS|HEAD|WS|\\*)[(]?({headers}[^)]*)(\\))?\\s+({path}.*/[^\\s]*)\\s+({action}[^\\s(]+)({params}.+)?(\\s*)$");
-	static Pattern routePattern = new Pattern("^({method}GET|POST|PUT|DELETE|OPTIONS|HEAD|WS|\\*)\\s+({path}.*/[^\\s]*)\\s+({action}[^\\s(]+)({params}.+)?(\\s*)$");
+	static Pattern routePattern = new Pattern("^({method}GET|POST|PUT|DELETE|OPTIONS|HEAD|WS|\\*)[(]?({headers}[^)]*)(\\))?\\s+({path}.*/[^\\s]*)\\s+({action}[^\\s(]+)({params}.+)?(\\s*)$");
     /**
      * Pattern used to locate a method override instruction in request.querystring
      */
@@ -42,19 +41,6 @@ public class RemoteRouter {
      */
     public static List<Route> routes = new CopyOnWriteArrayList<Route>();
     
-//    private static RemoteManager rm = new RemoteManager();
-
-//    public RemoteRouter() {
-//    	load();
-//    }
-
-//    public static RemoteManager rm() {
-////    	if (lastLoading < 0) {
-////        	load();    		
-////    	}
-//    	return rm;
-//    	
-//    }
 	
     /**
      * Parse the routes file. This is called at startup.
@@ -62,10 +48,9 @@ public class RemoteRouter {
      * @param prefix The prefix that the path of all routes in this route file start with. This prefix should not end with a '/' character.
      */
     public static void load() {
-//        routes.clear();
+        routes.clear();
 
     	// Remote route file
-    	//        routesConf = Play.appRoot.child("conf/remote.conf");
         routesConf = VirtualFile.fromRelativePath("/conf/remote.conf");
         parse(routesConf, null);
         lastLoading = System.currentTimeMillis();

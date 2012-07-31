@@ -29,9 +29,13 @@ public class RemoteManager {
 	private String urlBase;
 	
 	public RemoteManager() {
+		reload();
+	}
+	
+	public void reload() {
 		host = Play.configuration.getProperty("remote.host");
 		port = Play.configuration.getProperty("remote.port","9000");
-		urlBase = "http://" + host + ":" + port;
+		urlBase = "http://" + host + ":" + port;		
 	}
 
 
