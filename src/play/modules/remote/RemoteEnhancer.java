@@ -74,6 +74,11 @@ public class RemoteEnhancer extends Enhancer {
 	    	"return rm().delete(" + entityName + ".class, id); } ", ctClass);
 		ctClass.addMethod(delete);
 
+//		// post
+//		CtMethod post= CtMethod.make("public static play.libs.WS.HttpResponse create() { " +
+//	    	"return rm().delete(" + entityName + ".class); } ", ctClass);
+//		ctClass.addMethod(post);
+
 		// Done.
 		applicationClass.enhancedByteCode = ctClass.toBytecode();
 		ctClass.detach();

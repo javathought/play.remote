@@ -26,6 +26,7 @@ import play.db.jpa.GenericModel;
 import play.db.jpa.Model;
 import play.libs.WS;
 import play.libs.WS.HttpResponse;
+import play.modules.remote.RemoteRouter.Route;
 
 /**
  * A super class for remote JSON entities 
@@ -74,6 +75,18 @@ public class RemoteModel {
      */
     public static HttpResponse delete(Object id) {
         throw new UnsupportedOperationException("Please annotate your Remote model with @play.modules.remote.RemoteEntity annotation.");
+    }
+
+//    public HttpResponse delete() {
+//        return rm().delete(this);
+//    }
+
+    public HttpResponse save() {
+        return rm().persist(this);
+    }
+
+    public HttpResponse post(String query, Object... params) {
+        return rm().post(this, query, params);
     }
   
 }

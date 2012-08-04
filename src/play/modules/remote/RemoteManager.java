@@ -50,7 +50,6 @@ public class RemoteManager {
 		Route route = getIdUrl(clazz);
 		Object[] params = new Object[1]; params[0] = id;
 		String url = urlBase + bindParameters(route.path, params);
-//		String url = bindParameters(route.path, params);
 
 		if (route.method.equals("GET")) {
 	    	HttpResponse response = WS.url(url).get();			
@@ -64,10 +63,6 @@ public class RemoteManager {
 	public <T extends RemoteModel>List<T> findAll(Class clazz) {
 		Route route = getAllUrl(clazz);
 		String url = String.format(urlBase + route.path);
-//        if (Logger.isTraceEnabled()) {
-//        	Logger.trace("path = [%s]", route.path);
-//        }
-//		String url = String.format(route.path);
 
 		if (route.method.equals("GET")) {
 			return get(clazz, url);
@@ -92,7 +87,6 @@ public class RemoteManager {
 		Route route = RemoteRouter.route(clazz.getSimpleName()+".delete");
 		Object[] params = new Object[1]; params[0] = id;
 		String url = urlBase + bindParameters(route.path, params);
-//		String url = bindParameters(route.path, params);
 
 		if (Logger.isTraceEnabled()) {
 			Logger.trace("%s path = [%s]", route.method, route.path);
@@ -100,14 +94,9 @@ public class RemoteManager {
 		
 		if (route.method.equals("DELETE")) {
 	    	HttpResponse response = WS.url(url).delete();
-	    	
-//	    	if (response.success()) {
-	    		return response;
-//	    	}
+	    	return response;
 		}
-//		return 0;
-		throw new NotFound(route.path);
-		
+		throw new NotFound(route.path);		
 	}
 
 	private <T extends RemoteModel>List<T> get(Class clazz, String url) {
@@ -120,11 +109,32 @@ public class RemoteManager {
 				list.add( (T) gson.fromJson(array.get(i), clazz) );
 			}
 	    	return list;
-
 	}
 
+	public HttpResponse persist(RemoteModel remoteModel) {
+		Route route = getUrl(remoteModel.getClass(), "save");
+		String url = urlBase + route.path;
+
+		if (route.method.equals("PUT") || route.method.equals("POST") ) {
+	    	HttpResponse response = WS.url(url).body(gson.toJson(remoteModel)).post();
+	    	return response;
+		}
+		throw new NotFound(route.path);		
+	}
+
+	public HttpResponse post(RemoteModel remoteModel, String query, Object[] params) {
+		Route route = getUrl(remoteModel.getClass(), query);
+		String url = urlBase + bindParameters(route.path, params);
+
+		if (route.method.equals("*") || route.method.equals("POST") ) {
+	    	HttpResponse response = WS.url(url).body(gson.toJson(remoteModel)).post();
+	    	return response;
+		}
+		throw new NotFound(route.path);		
+	}	
+	
 	private String bindParameters(String path, Object[] params) {
-		int i = 0; // index in the params array
+		int i = 0; 				// index in the params array
 		int start = 0, pos = 0; // indexes for the place holders in the path
 		
 		StringBuffer s = new StringBuffer();
