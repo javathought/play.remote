@@ -18,14 +18,12 @@ h2. Configuring routes to remote services
 
 p. The configuration of the services on the remote server is done in the same way your configure routes in Play!. Create a `conf/remote.conf` file and add the routes as a standard Play! route. 
 
-bc.. 
-DELETE /api/accounts/{id}		Account.delete
+bc.. DELETE /api/accounts/{id}		Account.delete
 GET /api/accounts/{id}		Account.findById
 GET /api/accounts			Account.findAll
 GET /api/accounts/{id}/transactions	Transaction.findByAccount
 POST 	/api/accounts/{id}/transactions		Transaction.addToAccount
 PUT 	/api/transaction/new				Transaction.save
-
 
 p. The difference with a standard route file is the the pseudo method are not methods but "called" query to the service assocaited with a stub model. The path to interpret the route file is reversed compared to a standard route file : the call to a pseudo method defined in the route file will call the service on the associated path with the http method of the route.
 
@@ -90,8 +88,7 @@ p. To post/put
 
 The remote plugin respects the distinction of the http verbs PUT and POST. PUT is idempotent, whereas POST is not. Here is an example of the declaration of the routes for PUT and POST verbs.
 
-bc.. 
-POST 	/api/accounts/{id}/transactions		Transaction.addToAccount
+bc.. POST 	/api/accounts/{id}/transactions		Transaction.addToAccount
 PUT 	/api/transaction/new				Transaction.save
 
 p. The PUT verb is called with the special method save. So far, the url can't have parameters. 
@@ -99,8 +96,7 @@ p. The PUT verb is called with the special method save. So far, the url can't ha
 p. The POST verb can be used with any method name. The associated post method of the model has parameters : the name of a pseudo method in the route file, and the parameters value to bind to the url. The following code exposes the difference between the use of the save and post methods of the model.
 
 
-bc.. 
-    public static void saveOperation(@Valid Operation operation) {
+bc..     public static void saveOperation(@Valid Operation operation) {
         
     	HttpResponse response = operation.save();
 
