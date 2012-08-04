@@ -23,6 +23,9 @@ DELETE /api/accounts/{id}		Account.delete
 GET /api/accounts/{id}		Account.findById
 GET /api/accounts			Account.findAll
 GET /api/accounts/{id}/transactions	Transaction.findByAccount
+POST 	/api/accounts/{id}/transactions		Transaction.addToAccount
+PUT 	/api/transaction/new				Transaction.save
+
 
 p. The difference with a standard route file is the the pseudo method are not methods but "called" query to the service assocaited with a stub model. The path to interpret the route file is reversed compared to a standard route file : the call to a pseudo method defined in the route file will call the service on the associated path with the http method of the route.
 
@@ -83,4 +86,39 @@ bc..    	HttpResponse response = Account.delete(id);
     		}
     	}
 
+p. To post/put 
 
+The remote plugin respects the distinction of the http verbs PUT and POST. PUT is idempotent, whereas POST is not. Here is an example of the declaration of the routes for PUT and POST verbs.
+
+bc.. 
+POST 	/api/accounts/{id}/transactions		Transaction.addToAccount
+PUT 	/api/transaction/new				Transaction.save
+
+p. The PUT verb is called with the special method save. So far, the url can't have parameters. 
+
+p. The POST verb can be used with any method name. The associated post method of the model has parameters : the name of a pseudo method in the route file, and the parameters value to bind to the url. The following code exposes the difference between the use of the save and post methods of the model.
+
+
+bc.. 
+    public static void saveOperation(@Valid Operation operation) {
+        
+    	HttpResponse response = operation.save();
+
+    	if (response.success()) {
+    		operations(operation.id);
+    	} else {    	
+   			renderHtml(response.getString());
+    	}     
+    }
+
+    public static void addOperation(Long id, @Valid Transaction operation) {
+        
+    	HttpResponse response = operation.post("addToAccount", id);    	
+
+    	if (response.success()) {
+    		operations(id);
+    	} else {    	
+   			renderHtml(response.getString());
+    	}     
+    }    
+    
